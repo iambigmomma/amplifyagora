@@ -39,7 +39,8 @@ const onNewMarket = (preQuery, newData) =>{
         { searchResults.length >0 ? (
           <h2 className="text-green">
             <Icon type="success" name="check" className="icon" />>
-            {searchResults.length} Results for {searchTerm}
+            {searchResults.length} Results 
+            {/* for {searchTerm} */}
           </h2>
         ) : (
           <h2 className="header">
