@@ -94,7 +94,7 @@ class Product extends React.Component {
                   </div>
                   <div className="text-right">
                     <span className="mx-1">
-                      ${convertCentsToDollars(product.price)}
+                    €{convertCentsToDollars(product.price)}
                     </span>
                     {
                       !isProductOwner &&(
