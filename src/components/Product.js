@@ -98,7 +98,10 @@ class Product extends React.Component {
                     </span>
                     {
                       !isProductOwner &&(
-                        <PayButton />
+                        <PayButton 
+                          product={product}
+                          user={user}
+                        />
                       )
                       
                     }
