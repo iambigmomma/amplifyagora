@@ -15,7 +15,7 @@ const getMarket = `query GetMarket($id: ID!) {
     owner
     tags
     createdAt
-    products {
+    products( sortDirection: DESC, limit: 999){
       items {
         id
         description

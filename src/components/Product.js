@@ -65,8 +65,8 @@ class Product extends React.Component {
 
     return (
       <UserContext.Consumer>
-        {({user}) => {
-          const isProductOwner = user && user.attributes.sub === product.owner;
+        {({user, userAttributes}) => {
+          const isProductOwner = userAttributes && userAttributes.sub === product.owner;
 
           return (
 
@@ -100,7 +100,7 @@ class Product extends React.Component {
                       !isProductOwner &&(
                         <PayButton 
                           product={product}
-                          user={user}
+                          userAttributes={userAttributes}
                         />
                       )
                       
