@@ -1,13 +1,21 @@
 import React from "react";
-import { Auth, Hub } from 'aws-amplify';
+import { API, graphqlOperation, Auth, Hub } from 'aws-amplify';
 import "./App.css";
+import { getUser } from './graphql/queries';
 import {Authenticator, AmplifyTheme} from 'aws-amplify-react';
-import { BrowserRouter as Router, Route} from 'react-router-dom';
+import {  Router, Route} from 'react-router-dom';
+import createBrowserHistory from 'history/createBrowserHistory'
 import HomePage from './pages/HomePage';
 import ProfilePage from './pages/ProfilePage';
 import MarketPage from './pages/MarketPage';
 import Navbar from "./components/Navbar";
+import { registerUser } from "./graphql/mutations";
+
+
+export const history = createBrowserHistory()
+
 export const UserContext = React.createContext()
+
 
 class App extends React.Component {
   state = {
@@ -29,7 +37,8 @@ class App extends React.Component {
     switch(capsule.payload.event) {
       case "signIn":
         console.log('signed in')
-        this.getUserData()
+        this.getUserData();
+        this.registerNewUser(capsule.payload.data);
         break;
       case "signUp":
         console.log('signed up');
@@ -42,6 +51,31 @@ class App extends React.Component {
         return;
 
     }
+  }
+
+  registerNewUser = async signInData => {
+    const getUserInput = {
+      id: signInData.signInUserSession.idToken.payload.sub
+    }
+    const { data } = await API.graphql(graphqlOperation(getUser, getUserInput))
+    // If we can't get a user(in other words means the user hasn't been registered before),
+    //then we execute registerUser
+    if(!data.getUser) {
+      try {
+        const registerUserInput = {
+          ...getUserInput,
+          username: signInData.username,
+          email: signInData.signInUserSession.idToken.payload.email,
+          registered: true
+        }
+        const newUser = await API.graphql(graphqlOperation(registerUser, {
+          input: registerUserInput}))
+        console.log({ newUser })
+      } catch(err) {
+        console.error("Error registering new user", err)
+      }
+    }
+
   }
 
   handleSignout = async () => {
@@ -58,7 +92,7 @@ class App extends React.Component {
       <Authenticator theme={theme} />
     ) : (
       <UserContext.Provider value={{ user }}>
-      <Router>
+      <Router history={history}>
         
         <>
           {/* Navvigation */}
