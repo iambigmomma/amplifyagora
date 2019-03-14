@@ -6,6 +6,7 @@ import { Notification, Popover, Button, Dialog, Card, Form, Input, Radio } from 
 import { Container } from "aws-amplify-react/dist/AmplifyTheme";
 import { convertCentsToDollars, convertDollarsToCents } from '../utils'
 import { updateProduct, deleteProduct } from "../graphql/mutations";
+import { Link } from 'react-router-dom';
 import { UserContext } from '../App'
 import PayButton from "./PayButton";
 class Product extends React.Component {
@@ -68,6 +69,7 @@ class Product extends React.Component {
         {({user, userAttributes}) => {
           const isProductOwner = userAttributes && userAttributes.sub === product.owner;
 
+          const isEmailVerified = userAttributes && userAttributes.email_verified;
           return (
 
             <div className="card-Container">
@@ -97,12 +99,19 @@ class Product extends React.Component {
                     €{convertCentsToDollars(product.price)}
                     </span>
                     {
-                      !isProductOwner &&(
+                      isEmailVerified ?(
+                        !isProductOwner &&(
                         <PayButton 
                           product={product}
                           userAttributes={userAttributes}
                         />
+                      ) ):
+                      (
+                        <Link to="/profile" className="link">
+                          Verify Email
+                        </Link>
                       )
+                      
                       
                     }
                   </div>

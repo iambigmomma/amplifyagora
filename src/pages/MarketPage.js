@@ -5,6 +5,8 @@ import { Loading, Tabs, Icon } from "element-react";
 import { Link } from 'react-router-dom';
 import NewProduct from '../components/NewProduct';
 import Product from '../components/Product';
+import { formatProductDate } from '../utils'
+
 import { onCreateProduct, onUpdateProduct, onDeleteProduct } from '../graphql/subscriptions';
 import { updateProduct } from "../graphql/mutations";
 
@@ -38,6 +40,7 @@ class MarketPage extends React.Component {
     market: null,
     isLoading : true,
     isMarketOwner: false,
+    isEmailVerified: false
   };
 
   componentDidMount() {
@@ -100,9 +103,19 @@ class MarketPage extends React.Component {
     const result = await API.graphql(graphqlOperation(getMarket, input))
     console.log(result)
     this.setState({ market: result.data.getMarket, isLoading: false }, () => {
-      this.cheeckMarketOwner()
-    })
+      this.cheeckMarketOwner();
+      this.checkEmailVerified();
+      
+    });
   
+  }
+
+  checkEmailVerified = () => {
+    const { userAttributes } = this.props;
+    if( userAttributes ) {
+      this.setState({ isEmailVerified: userAttributes.email_verified})
+    }
+
   }
 
   cheeckMarketOwner = () => {
@@ -117,7 +130,7 @@ class MarketPage extends React.Component {
   }
 
   render() {
-    const { market, isLoading, isMarketOwner } = this.state;
+    const { market, isLoading, isMarketOwner, isEmailVerified } = this.state;
     return isLoading ? (
       <Loading fullscreen={true}/>
 
@@ -139,7 +152,7 @@ class MarketPage extends React.Component {
         <div className="items-center pt-2">
           <span style={{ color: 'var(--lightSquidInnk)', paddingBottom: '1em'}}>
           <Icon name="date" className="icon" />
-          {market.createdAt}
+          {formatProductDate(market.createdAt)}
           </span>
         </div>
         {/* New Product */}
@@ -156,7 +169,13 @@ class MarketPage extends React.Component {
                 }
                 name="1"
               >
-                <NewProduct marketId={this.props.marketId}/>
+              { isEmailVerified? (<NewProduct marketId={this.props.marketId}/>) :
+              (
+                <Link to="/profile" className="header">
+                  Verify Your Email Before Adding Product
+                </Link>
+              )
+              }
               </Tabs.Pane>
           )}
           { /* Products List */}
