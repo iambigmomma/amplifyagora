@@ -10,7 +10,7 @@ const Navbar = ({user, handleSignout}) => (
                     <span className="app-title">
                         <img src="https://icon.now.sh/account_balance/f90" alt="App Icon"
                         className="app-icon" />
-                        Siemens GMS Marketplace
+                        Hands-on Course Marketplace
                     </span>
                 </NavLink>
             </Nav.Item>
